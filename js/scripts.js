@@ -33,38 +33,63 @@ function timeout(ms) {
 
 
 class spinner {
+    branchCount = 0;
+
     constructor(domname) {
         this.html = `<div class="spinner-block">
             <div class="spinner-line">
                 <div class="spinner-line__inner">
-                    <div class="spinner-line__branch" data-branch-id="0"></div>
+                    <div class="spinner-line__space spinner-line__space--start"></div>
+                    <div class="spinner-line__space spinner-line__space--end"></div>
                 </div>
                 <div class="spinner-line__pointer-line"></div>
             </div>
         </div>`;
         $(domname).replaceWith(this.html);
+        this.createBranch(true);
+        this.createBranch(true);
+        this.createBranches(12);
 
-        this.spinnerWidth = $(".spinner-line").outerWidth();
+        this.spinner = $(".spinner-line");
+        this.spinnerWidth = this.spinner.outerWidth();
 
-        this.branchCount = 0;
         this.branchWidth = $(".spinner-line__branch").outerWidth();
 
         this.indent_step = this.branchWidth + (16 * 2);
 
+        this.spinnerInnerWidth = this.indent_step * this.branchCount;
 
-        this.createBranch();
-        this.createBranch();
-        this.createBranch();
-        this.createBranch();
-        this.createBranch();
-
-        this.move_to_id(0);
+        this.default();
     }
 
-    createBranch() {
+    createBranch(fake = false) {
+        var branchCount = this.branchCount;
+        if (fake) {
+            branchCount = NaN;
+            this.branchCount--;
+        }
+
+        const html = '<div class="spinner-line__branch" data-branch-id="' + branchCount + '"></div>';
+        $(".spinner-line__space--end").remove();
+        $(".spinner-line__inner")
+            .append(html)
+            .append('<div class="spinner-line__space spinner-line__space--end"></div>');
+        
         this.branchCount++;
-        const html = '<div class="spinner-line__branch" data-branch-id="' + this.branchCount + '"></div>';
-        $(".spinner-line__inner").append(html);
+    }
+
+    createBranches(number = 0) {
+        for (let index = 0; index < number; index++) {
+            this.createBranch();
+        }
+    }
+
+    default() {
+        if (this.spinnerWidth < this.spinnerInnerWidth) {
+            $(".spinner-line__space").css({ "padding": "0 " + (this.spinnerWidth / 4) + "px"});
+        }
+
+        this.move_to_id(0);
     }
 
     move_by_one(option) {
@@ -87,7 +112,7 @@ class spinner {
     move_to_id(id) {
         var branch = $(".spinner-line__branch[data-branch-id=" + id + "]");
         var random = this.rand(0);
-        $(".spinner-line__inner").scrollTo(branch, 0, { offset: - this.indent_step - (this.branchWidth / 2) + random });
+        $(".spinner-line__inner").scrollTo(branch, 600, { offset: -(random + this.indent_step + (this.branchWidth / 2 - 3)) });
     }
 }
 

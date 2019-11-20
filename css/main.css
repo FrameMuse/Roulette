@@ -46,6 +46,6 @@ body {
     border-bottom: unset;
 }
 
-.spinner-line__inner:before, .spinner-line__inner:after {
-    content: '';padding: 0 10em;
+.spinner-line__inner:before, .spinner-line__inner:after, .spinner-line__space {
+    padding: 0 225px;
 }
