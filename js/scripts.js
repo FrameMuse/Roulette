@@ -111,7 +111,7 @@ class spinner {
 
     move_to_id(id) {
         var branch = $(".spinner-line__branch[data-branch-id=" + id + "]");
-        var random = this.rand(0);
+        var random = this.rand(50);
         $(".spinner-line__inner").scrollTo(branch, 600, { offset: -(random + this.indent_step + (this.branchWidth / 2 - 3)) });
     }
 }
