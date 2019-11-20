@@ -39,7 +39,7 @@ class spinner {
         this.html = `<div class="spinner-block">
             <div class="spinner-line">
                 <div class="spinner-line__inner">
-                    <div class="spinner-line__space spinner-line__space--start"></div>
+                    <!--div class="spinner-line__space spinner-line__space--start"></div-->
                     <div class="spinner-line__space spinner-line__space--end"></div>
                 </div>
                 <div class="spinner-line__pointer-line"></div>
@@ -111,8 +111,8 @@ class spinner {
 
     move_to_id(id) {
         var branch = $(".spinner-line__branch[data-branch-id=" + id + "]");
-        var random = this.rand(50);
-        $(".spinner-line__inner").scrollTo(branch, 600, { offset: -(random + this.indent_step + (this.branchWidth / 2 - 3)) });
+        var random = this.rand(60);
+        $(".spinner-line__inner").scrollTo(branch, 600, { offset: -(random + (this.spinnerWidth / 2) - (this.branchWidth / 2 + 3)) });
     }
 }
 
