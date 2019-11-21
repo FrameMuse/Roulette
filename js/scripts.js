@@ -1,36 +1,6 @@
-String.prototype.multiReplace = function (array, replacement) {
-    var string = this;
-    for (var i in array) {
-        string = string.replace(new RegExp(array[i], 'g'), replacement);
-    }
-    return string;
-};
-
 String.prototype.intConvert = function () {
     return parseInt(this, 10);
 }
-
-String.prototype.wrapText = function (classname) {
-    return "<span class='" + classname + "'>" + this + "</span>";
-}
-
-// Functions
-
-function addDivTo(context, classname) {
-    context.append("<div class=" + classname + "></div>")
-}
-
-function timeout(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-
-
-
-
-
-
-
 
 class spinner {
     branchCount = 0;
@@ -46,30 +16,20 @@ class spinner {
             </div>
         </div>`;
         $(domname).replaceWith(this.html);
-        this.createBranch(true);
-        this.createBranch(true);
-        this.createBranches(12);
-
+        
         this.spinner = $(".spinner-line");
-        this.spinnerWidth = this.spinner.outerWidth();
 
-        this.branchWidth = $(".spinner-line__branch").outerWidth();
-
-        this.indent_step = this.branchWidth + (16 * 2);
-
-        this.spinnerInnerWidth = this.indent_step * this.branchCount;
-
-        this.default();
+        $(window).on("load", () => this.default());
     }
 
-    createBranch(fake = false) {
+    createBranch(fake = false, content = "") {
         var branchCount = this.branchCount;
         if (fake) {
             branchCount = NaN;
             this.branchCount--;
         }
 
-        const html = '<div class="spinner-line__branch" data-branch-id="' + branchCount + '"></div>';
+        const html = '<div class="spinner-line__branch" data-branch-id="' + branchCount + '">' + content + '</div>';
         $(".spinner-line__space--end").remove();
         $(".spinner-line__inner")
             .append(html)
@@ -85,11 +45,21 @@ class spinner {
     }
 
     default() {
-        if (this.spinnerWidth < this.spinnerInnerWidth) {
-            $(".spinner-line__space").css({ "padding": "0 " + (this.spinnerWidth / 4) + "px"});
+        // Calculate and delete test branch
+        if (this.spinner.find(".spinner-line__branch").length == 0) {
+            this.createBranch(true);
+            $(".spinner-line__branch").remove();
         }
-
+        this.calc();
+        // Go to default position
         this.move_to_id(0);
+    }
+
+    calc() {
+        this.spinnerWidth = this.spinner.outerWidth();
+        this.branchWidth = $(".spinner-line__branch").outerWidth();
+        this.indent_step = this.branchWidth + (16 * 2);
+        this.spinnerInnerWidth = this.indent_step * this.branchCount;
     }
 
     move_by_one(option) {
@@ -111,10 +81,26 @@ class spinner {
 
     move_to_id(id) {
         var branch = $(".spinner-line__branch[data-branch-id=" + id + "]");
-        var random = this.rand(60);
-        $(".spinner-line__inner").scrollTo(branch, 600, { offset: -(-random + (this.spinnerWidth / 2) - (this.branchWidth / 2 + 3)) });
+        var random = this.rand(120);
+        if (random > 60) {
+            random = -(random - 60);
+        }
+        $(".spinner-line__inner").scrollTo(branch, 600, { offset: -(random + (this.spinnerWidth / 2) - (this.branchWidth / 2 + 3)) });
+    }
+
+    branchHTML($img = "assets/img/player.png", $color = "orange") {
+        if (typeof $img == "object") {
+            $img = arguments[0].image;
+            $color = arguments[0].color;
+        }
+
+        var html = `<div class="betted-player">
+            <img src="` + $img + `" alt="player" class="betted-player__avatar">
+            <span class="betted-player__priceness-line ` + $color + `"></span>
+        </div>`;
+        return html;
     }
 }
 
 
-const yori = new spinner("#xer");
+const roullete = new spinner("#xer");
