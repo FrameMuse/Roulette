@@ -16,9 +16,6 @@ class spinner {
             </div>
         </div>`;
         $(domname).replaceWith(this.html);
-        
-        this.spinner = $(".spinner-line");
-
         $(window).on("load", () => this.default());
     }
 
@@ -34,31 +31,33 @@ class spinner {
         $(".spinner-line__inner")
             .append(html)
             .append('<div class="spinner-line__space spinner-line__space--end"></div>');
-        
+
         this.branchCount++;
     }
 
-    createBranches(number = 0) {
+    createBranches(number = 0, fake = false, content = "") {
         for (let index = 0; index < number; index++) {
-            this.createBranch();
+            this.createBranch(fake, content);
         }
     }
 
     default() {
         // Calculate and delete test branch
-        if (this.spinner.find(".spinner-line__branch").length == 0) {
+        if ($(".spinner-line__branch").length == 0) {
             this.createBranch(true);
             $(".spinner-line__branch").remove();
         }
         this.calc();
         // Go to default position
-        this.move_to_id(0);
+        this.move_to_id(0, 0);
+        // Clear count
+        this.branchCount = 0;
     }
 
     calc() {
-        this.spinnerWidth = this.spinner.outerWidth();
+        this.spinnerWidth = $(".spinner-line__inner").outerWidth();
         this.branchWidth = $(".spinner-line__branch").outerWidth();
-        this.indent_step = this.branchWidth + (16 * 2);
+        this.indent_step = this.branchWidth;
         this.spinnerInnerWidth = this.indent_step * this.branchCount;
     }
 
@@ -79,13 +78,20 @@ class spinner {
         return Math.floor((Math.random() * max) + 1);
     }
 
-    move_to_id(id) {
+    async move_to_id(id, duration = 12000) {
         var branch = $(".spinner-line__branch[data-branch-id=" + id + "]");
-        var random = this.rand(120);
-        if (random > 60) {
-            random = -(random - 60);
+        var random = this.rand(this.indent_step);
+        if (random > this.indent_step / 2) {
+            random = -(random - this.indent_step / 2);
         }
-        $(".spinner-line__inner").scrollTo(branch, 600, { offset: -(random + (this.spinnerWidth / 2) - (this.branchWidth / 2 + 3)) });
+        var gotThere = new Promise((resolve) => {
+            $(".spinner-line__inner").scrollTo(branch, duration, {
+                offset: -(random + (this.spinnerWidth / 2) - (this.branchWidth / 2)),
+                easing: $.bez([.3, .75, .27, 1]),
+                onAfter: () => resolve(),
+            });
+        });
+        return await gotThere;
     }
 
     branchHTML($img = "assets/img/player.png", $color = "orange") {
@@ -94,6 +100,8 @@ class spinner {
             $color = arguments[0].color;
         }
 
+        $color = "betted-player__priceness-line--" + $color;
+
         var html = `<div class="betted-player">
             <img src="` + $img + `" alt="player" class="betted-player__avatar">
             <span class="betted-player__priceness-line ` + $color + `"></span>
@@ -101,6 +109,3 @@ class spinner {
         return html;
     }
 }
-
-
-const roullete = new spinner("#xer");
